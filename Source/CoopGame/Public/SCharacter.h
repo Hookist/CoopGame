@@ -24,10 +24,23 @@ protected:
 
 	bool bWantsToZoom;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	float ZoomedFOV;
 
 	// Default FOV set during begin
 	float DefaultFOV;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1f, ClampMax = 100.f))
+	float ZoomInterpSpeed;
+
+	UPROPERTY(BlueprintReadWrite)
+	class ASWeapon* CurrentWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	TSubclassOf<ASWeapon> StarterWeaponClass;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
+	FName WeaponAttachedSocketName;
 
 public:
 	// Sets default values for this character's properties
@@ -46,6 +59,12 @@ protected:
 	void EndCrouch();
 
 	void StartJump();
+
+	void BeginZoom();
+
+	void EndZoom();
+
+	void Fire();
 
 public:	
 	// Called every frame

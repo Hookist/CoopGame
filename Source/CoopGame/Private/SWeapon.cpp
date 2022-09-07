@@ -8,25 +8,25 @@
 #include <Components/SkeletalMeshComponent.h>
 #include <Particles/ParticleSystemComponent.h>
 #include "SProjectile.h"
+#include <Camera/CameraShakeBase.h>
+#include "CoopGame/CoopGame.h"
+#include <PhysicalMaterials/PhysicalMaterial.h>
+
+static int32 DebugWeaponDrawing = 0;
+FAutoConsoleVariableRef CVARDebugWeaponDrawing(
+	TEXT("COOP.DebugWeapons"),
+	DebugWeaponDrawing, 
+	TEXT("Draw Debug Lines for Weapons"),
+	ECVF_Cheat);
 
 // Sets default values
 ASWeapon::ASWeapon()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
 	SetRootComponent(MeshComp);
 
 	MuzzleSocketName = "MuzzleSocket";
 	TracerTargetName = "Target";
-}
-
-// Called when the game starts or when spawned
-void ASWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-	
 }
 
 void ASWeapon::Fire_Implementation()
@@ -50,6 +50,7 @@ void ASWeapon::Fire_Implementation()
 	queryParams.AddIgnoredActor(owner);
 	queryParams.AddIgnoredActor(this);
 	queryParams.bTraceComplex = true;
+	queryParams.bReturnPhysicalMaterial = true;
 
 	// Particle "Target" parameter
 	FVector tracerEndPoint = traceEnd;
@@ -62,15 +63,40 @@ void ASWeapon::Fire_Implementation()
 		AActor* HitActor = Hit.GetActor();
 		UGameplayStatics::ApplyPointDamage(HitActor, 20.f, shotDirection, Hit, owner->GetInstigatorController(), this, DamageType);
 
-		if (ImpactEffect)
+		EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+		UParticleSystem* selectedEffect = nullptr;
+		switch (surfaceType)
 		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+		case SURFACE_FLESHDEFAULT:
+			selectedEffect = FleshImpactEffect;
+			break;
+		case SURFACE_FLESHVULNERABLE:
+			selectedEffect = FleshImpactEffect;
+			break;
+		default:
+			selectedEffect = DefaultImpactEffect;
+			break;
 		}
+
+		if (selectedEffect)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), selectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+		}
+
 		tracerEndPoint = Hit.ImpactPoint;
 	}
 
-	DrawDebugLine(GetWorld(), eyeLocation, traceEnd, FColor::White, false, 1.f, 0, 1.f);
+	if (DebugWeaponDrawing > 0)
+	{ 
+		DrawDebugLine(GetWorld(), eyeLocation, traceEnd, FColor::White, false, 1.f, 0, 1.f);
+	}
 
+	PlayFireEffects(tracerEndPoint);
+}
+
+void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
+{
 	if (MuzzleEffect)
 	{
 		UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComp, MuzzleSocketName);
@@ -82,15 +108,17 @@ void ASWeapon::Fire_Implementation()
 		UParticleSystemComponent* tracerComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, muzzleLocation);
 		if (tracerComp)
 		{
-			tracerComp->SetVectorParameter("Target", tracerEndPoint);
+			tracerComp->SetVectorParameter("Target", TracerEndPoint);
+		}
+	}
+
+	APawn* myOwner = Cast<APawn>(GetOwner());
+	if (myOwner)
+	{
+		APlayerController* PC = Cast<APlayerController>(myOwner->GetController());
+		if (PC)
+		{
+			PC->ClientStartCameraShake(FireCamShake);
 		}
 	}
 }
-
-// Called every frame
-void ASWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-

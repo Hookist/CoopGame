@@ -10,6 +10,7 @@ class USkeletalMeshComponent;
 class UDamageType;
 class UParticleSystem;
 class ASProjectile;
+class UCameraShakeBase;
 
 UCLASS()
 class COOPGAME_API ASWeapon : public AActor
@@ -34,7 +35,10 @@ protected:
 	UParticleSystem* MuzzleEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	UParticleSystem* ImpactEffect;
+	UParticleSystem* DefaultImpactEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	UParticleSystem* FleshImpactEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	UParticleSystem* TracerEffect;
@@ -42,22 +46,20 @@ protected:
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile")
 	TSubclassOf<ASProjectile> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<UCameraShakeBase> FireCamShake;
 	
 public:	
 	// Sets default values for this actor's properties
 	ASWeapon();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Weapon")
 	void Fire();
 
 	virtual void Fire_Implementation();
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+protected:
 
+	void PlayFireEffects(FVector TracerEndPoint);
 };
