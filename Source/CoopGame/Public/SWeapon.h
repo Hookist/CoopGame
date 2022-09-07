@@ -49,6 +49,20 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<UCameraShakeBase> FireCamShake;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	float BaseDamage;
+
+	FTimerHandle TimerHandle_TimeBetweenShots;
+
+	float LastFiredTime;
+
+	// RMP - Bullets per minut fired by weapon
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float RateOfFire;
+
+	// Derived from RateOfFire
+	float TimeBetweenShots;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -59,7 +73,13 @@ public:
 
 	virtual void Fire_Implementation();
 
+	void StartFire();
+
+	void StopFire();
+
 protected:
+
+	virtual void BeginPlay() override;
 
 	void PlayFireEffects(FVector TracerEndPoint);
 };

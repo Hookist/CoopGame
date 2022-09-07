@@ -11,6 +11,7 @@
 #include <Camera/CameraShakeBase.h>
 #include "CoopGame/CoopGame.h"
 #include <PhysicalMaterials/PhysicalMaterial.h>
+#include <TimerManager.h>
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(
@@ -27,6 +28,10 @@ ASWeapon::ASWeapon()
 
 	MuzzleSocketName = "MuzzleSocket";
 	TracerTargetName = "Target";
+
+	BaseDamage = 20.f;
+
+	RateOfFire = 600.f;
 }
 
 void ASWeapon::Fire_Implementation()
@@ -56,14 +61,20 @@ void ASWeapon::Fire_Implementation()
 	FVector tracerEndPoint = traceEnd;
 
 	FHitResult Hit;
-	if (GetWorld()->LineTraceSingleByChannel(Hit, eyeLocation, traceEnd, ECC_Visibility, queryParams))
+	if (GetWorld()->LineTraceSingleByChannel(Hit, eyeLocation, traceEnd, COLLISION_WEAPON, queryParams))
 	{
 		// Blocking hit! Process damage
 
 		AActor* HitActor = Hit.GetActor();
-		UGameplayStatics::ApplyPointDamage(HitActor, 20.f, shotDirection, Hit, owner->GetInstigatorController(), this, DamageType);
-
 		EPhysicalSurface surfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+		float actualDamage = BaseDamage;
+		if (surfaceType == SURFACE_FLESHVULNERABLE)
+		{
+			actualDamage *= 4.f;
+		}
+
+		UGameplayStatics::ApplyPointDamage(HitActor, actualDamage, shotDirection, Hit, owner->GetInstigatorController(), this, DamageType);
 
 		UParticleSystem* selectedEffect = nullptr;
 		switch (surfaceType)
@@ -93,6 +104,27 @@ void ASWeapon::Fire_Implementation()
 	}
 
 	PlayFireEffects(tracerEndPoint);
+
+	LastFiredTime = GetWorld()->TimeSeconds;
+}
+
+void ASWeapon::StartFire()
+{
+	float firstDelay = FMath::Max(LastFiredTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.f);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, firstDelay);
+}
+
+void ASWeapon::StopFire()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_TimeBetweenShots);
+}
+
+void ASWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TimeBetweenShots = 60.f / RateOfFire;
 }
 
 void ASWeapon::PlayFireEffects(FVector TracerEndPoint)

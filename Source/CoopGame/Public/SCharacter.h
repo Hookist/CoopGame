@@ -64,7 +64,9 @@ protected:
 
 	void EndZoom();
 
-	void Fire();
+	void StartFire();
+
+	void StopFire();
 
 public:	
 	// Called every frame
