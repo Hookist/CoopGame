@@ -49,4 +49,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void PreEndPlay();
+
+	virtual void PreEndPlay_Implementation();
 };

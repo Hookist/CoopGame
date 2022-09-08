@@ -29,9 +29,6 @@ ASProjectile::ASProjectile()
 	ProjectileMovement->MaxSpeed = 3000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
-
-	// Die after 3 seconds by default
-	InitialLifeSpan = 3.0f;
 }
 
 void ASProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -57,9 +54,12 @@ void ASProjectile::BeginPlay()
 
 void ASProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	PreEndPlay();
 	Super::EndPlay(EndPlayReason);
+}
 
-	GetInstigator<AActor>();
+void ASProjectile::PreEndPlay_Implementation()
+{
 	TArray<AActor*> actorsToIgnore = TArray<AActor*>();
 	actorsToIgnore.Add(this);
 

@@ -111,7 +111,6 @@ void ASWeapon::Fire_Implementation()
 void ASWeapon::StartFire()
 {
 	float firstDelay = FMath::Max(LastFiredTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.f);
-
 	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, firstDelay);
 }
 
