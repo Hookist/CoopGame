@@ -23,6 +23,7 @@ void ARocket::HandleOnCollisonCompHit(UPrimitiveComponent* HitComponent, AActor*
 	AddRadialImpulseToPhysicBodyComponents();
 	LaunchCharactersInRadius(Hit);
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), 40.f, Hit.Location, ExplosionRadius, UDamageType::StaticClass(), {}, this, GetInstigatorController(), true);
+	Super::HandleOnCollisonCompHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	Destroy();
 }
 

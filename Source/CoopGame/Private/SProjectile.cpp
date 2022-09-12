@@ -31,7 +31,7 @@ ASProjectile::ASProjectile()
 	ProjectileMovement->bShouldBounce = true;
 }
 
-void ASProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ASProjectile::HandleOnCollisonCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->GetCollisionObjectType() == ECC_Pawn) // OtherComp->IsSimulatingPhysics())
@@ -49,7 +49,7 @@ void ASProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
 void ASProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	CollisionComp->OnComponentHit.AddUniqueDynamic(this, &ASProjectile::OnHit);	// set up a notification for when this component hits something blocking
+	CollisionComp->OnComponentHit.AddUniqueDynamic(this, &ASProjectile::HandleOnCollisonCompHit);	// set up a notification for when this component hits something blocking
 }
 
 void ASProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
