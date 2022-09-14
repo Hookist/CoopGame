@@ -20,7 +20,7 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "HealthComponent")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "HealthComponent")
 	float Health;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HealthComponent")
@@ -36,4 +36,7 @@ protected:
 
 	UFUNCTION()
 	void HandleTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UFUNCTION()
+	void OnRep_Health(float OldHealth);
 };

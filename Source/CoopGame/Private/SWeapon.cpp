@@ -31,10 +31,8 @@ ASWeapon::ASWeapon()
 	TracerTargetName = "Target";
 
 	BaseDamage = 20.f;
-
 	RateOfFire = 600.f;
-
-	SetReplicates(true);
+	bReplicates = true;
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
 }
