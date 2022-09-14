@@ -57,6 +57,8 @@ ASTracketBot::ASTracketBot()
 
 void ASTracketBot::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+	Super::NotifyActorBeginOverlap(OtherActor);
+
 	if (bStartedSelfDestruction || bExploded)
 		return;
 
