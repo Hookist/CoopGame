@@ -12,6 +12,11 @@ USHealthComponent::USHealthComponent()
 }
 
 
+float USHealthComponent::GetHealth() const
+{
+	return Health;
+}
+
 // Called when the game starts
 void USHealthComponent::BeginPlay()
 {
@@ -67,4 +72,3 @@ void USHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME(USHealthComponent, Health);
 }
-
