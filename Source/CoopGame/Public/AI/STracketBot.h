@@ -77,6 +77,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "TrackerBot")
 	int32 MaxPowerLevel;
 
+	FTimerHandle TimerHandle_RefreshPath;
+
 public:
 	// Sets default values for this pawn's properties
 	ASTracketBot();
@@ -109,6 +111,8 @@ protected:
 	bool CheckIsAIControlled(AActor* actor);
 
 	void SetPowerLevel(int32 NewVal);
+
+	void RefreshPath();
 
 public:	
 	// Called every frame

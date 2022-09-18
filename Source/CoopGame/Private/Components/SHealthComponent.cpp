@@ -11,6 +11,8 @@ USHealthComponent::USHealthComponent()
 	DefaultHealth = 100.f;
 	bIsDead = false;
 
+	TeamNum = 255;
+
 	SetIsReplicatedByDefault(true);
 }
 
@@ -18,6 +20,26 @@ USHealthComponent::USHealthComponent()
 float USHealthComponent::GetHealth() const
 {
 	return Health;
+}
+
+bool USHealthComponent::IsFriendly(AActor* ActorA, AActor* ActorB)
+{
+	if (ActorA == nullptr || ActorB == nullptr)
+	{
+		// Assume Friendly
+		return true;
+	}
+		
+	USHealthComponent* healthCompA = Cast<USHealthComponent>(ActorA->GetComponentByClass(USHealthComponent::StaticClass()));
+	USHealthComponent* healthCompB = Cast<USHealthComponent>(ActorB->GetComponentByClass(USHealthComponent::StaticClass()));
+
+	if (healthCompA == nullptr || healthCompB == nullptr)
+	{
+		// Assume Friendly
+		return true;
+	}
+
+	return healthCompA->TeamNum == healthCompB->TeamNum;
 }
 
 // Called when the game starts
@@ -41,6 +63,11 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 {
 	if (Damage <= 0.f || bIsDead)
 		return;
+
+	if (DamagedActor != DamageCauser && IsFriendly(DamagedActor, DamageCauser))
+	{
+		return;
+	}
 
 	//Update health clamped
 	Health = FMath::Clamp(Health - Damage, 0.f, DefaultHealth);

@@ -18,6 +18,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnHealthChangedSignature OnHealthChanged;
 
+	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "HealthComponent")
+	uint8 TeamNum;
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "HealthComponent")
@@ -33,6 +36,9 @@ public:
 	USHealthComponent();
 
 	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "HealthComponent")
+	static bool IsFriendly(AActor* ActorA, AActor* ActorB);
 
 protected:
 	// Called when the game starts
