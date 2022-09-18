@@ -4,6 +4,17 @@
 #include "SGameState.h"
 #include <Net/UnrealNetwork.h>
 
+void ASGameState::SetWaveState(EWaveState NewState)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		EWaveState oldState = WaveState;
+		WaveState = NewState;
+		// Call on server
+		OnRep_WaveState(oldState);
+	}
+}
+
 void ASGameState::OnRep_WaveState(EWaveState PreviousWaveState)
 {
 	WaveStateChanged(WaveState, PreviousWaveState);

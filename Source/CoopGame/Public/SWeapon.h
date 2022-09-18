@@ -78,6 +78,10 @@ protected:
 
 	UPROPERTY(ReplicatedUsing=OnRep_HitScanTrace)
 	FHitScanTrace HitScanTrace;
+
+	// BulletSpread in degrees
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin=0.f))
+	float BulletSpread;
 	
 public:	
 	// Sets default values for this actor's properties

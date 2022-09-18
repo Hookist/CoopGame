@@ -72,10 +72,6 @@ protected:
 
 	void EndZoom();
 
-	void StartFire();
-
-	void StopFire();
-
 	UFUNCTION()
 	void HandleOnHealthChanged(USHealthComponent* HealtComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
@@ -90,5 +86,11 @@ public:
 	virtual FVector GetPawnViewLocation() const override;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void StartFire();
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void StopFire();
 
 };
