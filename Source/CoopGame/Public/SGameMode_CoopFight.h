@@ -24,6 +24,7 @@ class COOPGAME_API ASGameMode_CoopFight : public AGameModeBase
 
 public:
 
+	// AActor*, VictimActor, AController*, VictimController, AActor*, KillerActor, AController*, KillerController
 	UPROPERTY(BlueprintAssignable, Category = "GameMode")
 	FOnActorKilled OnActorKilled;
 
