@@ -15,6 +15,7 @@ void ARocket::PreEndPlay_Implementation()
 ARocket::ARocket()
 {
 	bReplicates = true;
+	Damage = 50.f;
 }
 
 void ARocket::BeginPlay()
@@ -29,8 +30,11 @@ void ARocket::HandleOnCollisonCompHit(UPrimitiveComponent* HitComponent, AActor*
 	//LaunchCharactersInRadius(Hit);
 	Server_AddRadialImpulseToPhysicBodyComponents();
 	Server_LaunchCharactersInRadius(Hit);
-
-	UGameplayStatics::ApplyRadialDamage(GetWorld(), 40.f, Hit.Location, ExplosionRadius, UDamageType::StaticClass(), {}, this, GetInstigatorController(), true);
+	
+	if (GetLocalRole() == ROLE_Authority)
+	{ 
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), Damage, Hit.Location, ExplosionRadius, UDamageType::StaticClass(), {}, this, GetInstigatorController(), true);\
+	}
 	Super::HandleOnCollisonCompHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	Destroy();
 }

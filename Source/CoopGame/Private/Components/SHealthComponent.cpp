@@ -31,7 +31,7 @@ bool USHealthComponent::IsFriendly(AActor* ActorA, AActor* ActorB)
 {
 	if (ActorA == nullptr || ActorB == nullptr)
 	{
-		// Assume Friendly
+		// Assume enemy
 		return true;
 	}
 
@@ -40,8 +40,8 @@ bool USHealthComponent::IsFriendly(AActor* ActorA, AActor* ActorB)
 
 	if (healthCompA == nullptr || healthCompB == nullptr)
 	{
-		// Assume Friendly
-		return true;
+		// Assume enemy
+		return false;
 	}
 
 	if (!healthCompA->bIsUseTeamNum || healthCompB->bIsUseTeamNum)
@@ -110,8 +110,9 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 
 		if (GetOwner() != DamageCauser)
 		{
-			ASPlayerState* playerState = Cast<APawn>(DamageCauser)->GetPlayerState<ASPlayerState>();
-			playerState->AddScore(1.f);
+			ASPlayerState* playerState = InstigatedBy->GetPlayerState<ASPlayerState>();
+			if (playerState)
+				playerState->AddScore(1.f);
 
 			GM_CoopFight->OnActorKilled.Broadcast(GetOwner(), pawnController, DamageCauser, InstigatedBy);
 		}

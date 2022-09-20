@@ -25,6 +25,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Rocket")
 	float PhysicBodyImpulseStrength;
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Rocket")
+	float Damage;
+
 public:
 
 	ARocket();
