@@ -25,6 +25,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Rocket")
 	float PhysicBodyImpulseStrength;
 
+public:
+
+	ARocket();
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -37,6 +41,11 @@ private:
 
 	void AddRadialImpulseToPhysicBodyComponents();
 
+	UFUNCTION(Server, Reliable)
+	void Server_AddRadialImpulseToPhysicBodyComponents();
+
 	void LaunchCharactersInRadius(const FHitResult& Hit);
 	
+	UFUNCTION(Server, Reliable)
+	void Server_LaunchCharactersInRadius(const FHitResult& Hit);
 };

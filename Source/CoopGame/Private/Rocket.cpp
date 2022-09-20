@@ -12,6 +12,11 @@ void ARocket::PreEndPlay_Implementation()
 	Super::PreEndPlay_Implementation();
 }
 
+ARocket::ARocket()
+{
+	bReplicates = true;
+}
+
 void ARocket::BeginPlay()
 {
 	Super::BeginPlay();
@@ -20,8 +25,11 @@ void ARocket::BeginPlay()
 
 void ARocket::HandleOnCollisonCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	AddRadialImpulseToPhysicBodyComponents();
-	LaunchCharactersInRadius(Hit);
+	//AddRadialImpulseToPhysicBodyComponents();
+	//LaunchCharactersInRadius(Hit);
+	Server_AddRadialImpulseToPhysicBodyComponents();
+	Server_LaunchCharactersInRadius(Hit);
+
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), 40.f, Hit.Location, ExplosionRadius, UDamageType::StaticClass(), {}, this, GetInstigatorController(), true);
 	Super::HandleOnCollisonCompHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	Destroy();
@@ -40,6 +48,11 @@ void ARocket::AddRadialImpulseToPhysicBodyComponents()
 	}
 }
 
+void ARocket::Server_AddRadialImpulseToPhysicBodyComponents_Implementation()
+{
+	AddRadialImpulseToPhysicBodyComponents();
+}
+
 void ARocket::LaunchCharactersInRadius(const FHitResult& Hit)
 {
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes = TArray<TEnumAsByte<EObjectTypeQuery>>();
@@ -53,4 +66,21 @@ void ARocket::LaunchCharactersInRadius(const FHitResult& Hit)
 		FVector launchVelocity = (character->GetActorLocation() - Hit.Location).GetSafeNormal() * LaunchVelosityMultiplier;
 		character->LaunchCharacter(launchVelocity, true, true);
 	}
+}
+
+void ARocket::Server_LaunchCharactersInRadius_Implementation(const FHitResult& Hit)
+{
+	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes = TArray<TEnumAsByte<EObjectTypeQuery>>();
+	objectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+	TArray<AActor*> outActors;
+	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), Hit.Location, ExplosionRadius, objectTypes, ASCharacter::StaticClass(), {}, outActors);
+
+	for (AActor* actor : outActors)
+	{
+		ASCharacter* character = CastChecked<ASCharacter>(actor);
+		FVector launchVelocity = (character->GetActorLocation() - Hit.Location).GetSafeNormal() * LaunchVelosityMultiplier;
+		character->LaunchCharacter(launchVelocity, true, true);
+	}
+
+	//LaunchCharactersInRadius(Hit);
 }

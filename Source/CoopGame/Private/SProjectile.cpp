@@ -29,6 +29,9 @@ ASProjectile::ASProjectile()
 	ProjectileMovement->MaxSpeed = 3000.f;
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = true;
+
+	bReplicates = true;
+	ProjectileMovement->SetIsReplicated(true);
 }
 
 void ASProjectile::HandleOnCollisonCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

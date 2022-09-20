@@ -21,6 +21,9 @@ protected:
 
 public:
 
+	ASProjectileWeapon();
+
 	virtual void Fire_Implementation() override;
-	
+
+	virtual void ServerFire_Implementation() override;
 };
