@@ -6,6 +6,7 @@
 #include "SGameMode.h"
 #include "SGameMode_CoopFight.h"
 #include "EngineUtils.h"
+#include "SPlayerState.h"
 
 // Sets default values for this component's properties
 USHealthComponent::USHealthComponent()
@@ -109,6 +110,9 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 
 		if (GetOwner() != DamageCauser)
 		{
+			ASPlayerState* playerState = Cast<APawn>(DamageCauser)->GetPlayerState<ASPlayerState>();
+			playerState->AddScore(1.f);
+
 			GM_CoopFight->OnActorKilled.Broadcast(GetOwner(), pawnController, DamageCauser, InstigatedBy);
 		}
 		else

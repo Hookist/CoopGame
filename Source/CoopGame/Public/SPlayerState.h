@@ -13,9 +13,20 @@ UCLASS()
 class COOPGAME_API ASPlayerState : public APlayerState
 {
 	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	TArray<USoundBase*> ScoreAddedSounds;
 	
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "PlayerState")
 	void AddScore(float ScoreDelta);
+
+	virtual void OnRep_Score() override;
+
+private:
+
+	void PlayRandomSound(TArray<USoundBase*> Sounds);
 };
