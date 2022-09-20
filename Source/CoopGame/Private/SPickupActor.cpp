@@ -5,6 +5,7 @@
 #include <Components/SphereComponent.h>
 #include <Components/DecalComponent.h>
 #include "SPowerupActor.h"
+#include "SCharacter.h"
 
 // Sets default values
 ASPickupActor::ASPickupActor()
@@ -56,7 +57,7 @@ void ASPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 
 	// #TODO: Grant a powerup to player if available
-	if (GetLocalRole() == ROLE_Authority && PowerupInstance)
+	if (GetLocalRole() == ROLE_Authority && PowerupInstance && OtherActor->GetClass()->IsChildOf(ASCharacter::StaticClass()))
 	{
 		PowerupInstance->ActivatePowerup(OtherActor);
 		PowerupInstance = nullptr;

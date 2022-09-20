@@ -4,6 +4,8 @@
 #include "Components/SHealthComponent.h"
 #include <Net/UnrealNetwork.h>
 #include "SGameMode.h"
+#include "SGameMode_CoopFight.h"
+#include "EngineUtils.h"
 
 // Sets default values for this component's properties
 USHealthComponent::USHealthComponent()
@@ -12,6 +14,8 @@ USHealthComponent::USHealthComponent()
 	bIsDead = false;
 
 	TeamNum = 255;
+
+	bIsUseTeamNum = false;
 
 	SetIsReplicatedByDefault(true);
 }
@@ -29,7 +33,7 @@ bool USHealthComponent::IsFriendly(AActor* ActorA, AActor* ActorB)
 		// Assume Friendly
 		return true;
 	}
-		
+
 	USHealthComponent* healthCompA = Cast<USHealthComponent>(ActorA->GetComponentByClass(USHealthComponent::StaticClass()));
 	USHealthComponent* healthCompB = Cast<USHealthComponent>(ActorB->GetComponentByClass(USHealthComponent::StaticClass()));
 
@@ -39,6 +43,9 @@ bool USHealthComponent::IsFriendly(AActor* ActorA, AActor* ActorB)
 		return true;
 	}
 
+	if (!healthCompA->bIsUseTeamNum || healthCompB->bIsUseTeamNum)
+		return false;
+
 	return healthCompA->TeamNum == healthCompB->TeamNum;
 }
 
@@ -47,7 +54,7 @@ void USHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Only hool if we are server
+	// Only hook if we are server
 	if (GetOwnerRole() == ROLE_Authority)
 	{ 
 		AActor* myOwner = GetOwner();
@@ -78,12 +85,35 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 
 	OnHealthChanged.Broadcast(this, Health, Damage, DamageType, InstigatedBy, DamageCauser);
 
-	if (bIsDead)
+	if (!bIsDead)
+		return;
+
+	ASGameMode* GM = Cast<ASGameMode>(GetWorld()->GetAuthGameMode());
+	if (GM)
+	{
+		GM->OnActorKilled.Broadcast(GetOwner(), DamageCauser, InstigatedBy);
+	}
+	ASGameMode_CoopFight* GM_CoopFight = Cast<ASGameMode_CoopFight>(GetWorld()->GetAuthGameMode());
+	if (GM_CoopFight)
 	{ 
-		ASGameMode* GM = Cast<ASGameMode>(GetWorld()->GetAuthGameMode());
-		if (GM)
+		AController* pawnController = nullptr;
+		
+		for (TActorIterator<APlayerController> iterator = TActorIterator<APlayerController>(GetWorld()); iterator; ++iterator)
 		{
-			GM->OnActorKilled.Broadcast(GetOwner(), DamageCauser, InstigatedBy);
+			if (iterator->AcknowledgedPawn == GetOwner())
+			{
+				pawnController = *iterator;
+				break;
+			}
+		}
+
+		if (GetOwner() != DamageCauser)
+		{
+			GM_CoopFight->OnActorKilled.Broadcast(GetOwner(), pawnController, DamageCauser, InstigatedBy);
+		}
+		else
+		{
+			GM_CoopFight->OnActorKilled.Broadcast(GetOwner(), InstigatedBy, DamageCauser, InstigatedBy);
 		}
 	}
 }

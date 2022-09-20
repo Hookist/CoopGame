@@ -31,6 +31,9 @@ protected:
 
 	bool bIsDead;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HealthComponent")
+	bool bIsUseTeamNum;
+
 public:	
 	// Sets default values for this component's properties
 	USHealthComponent();
