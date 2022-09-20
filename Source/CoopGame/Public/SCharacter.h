@@ -93,4 +93,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void StopFire();
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void Server_SpawnAndSetWeapon(TSubclassOf<ASWeapon> WeaponClass);
 };
