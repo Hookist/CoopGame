@@ -142,6 +142,11 @@ void ASCharacter::HandleOnHealthChanged(USHealthComponent* HealtComp, float Heal
 		DetachFromControllerPendingDestroy();
 
 		HealthComponent->OnHealthChanged.RemoveAll(this);
+
+		if (GetLocalRole() == ROLE_Authority)
+		{ 
+			CurrentWeapon->Destroy(true);
+		}
 		SetLifeSpan(5.f);
 	}
 }
