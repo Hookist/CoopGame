@@ -6,6 +6,13 @@
 #include "Components/SHealthComponent.h"
 #include <EngineUtils.h>
 #include "GameFramework/PlayerStart.h"
+#include <Kismet/GameplayStatics.h>
+#include "GameFramework/PlayerState.h"
+
+ASGameMode_CoopFight::ASGameMode_CoopFight()
+{
+	NextPlayerId = 1;
+}
 
 void ASGameMode_CoopFight::StartPlay()
 {
@@ -25,6 +32,25 @@ AActor* ASGameMode_CoopFight::FindPlayerStart_Implementation(AController* Player
 	int32 min = 0;
 	int32 max = playerStarts.Num() - 1;
 	return playerStarts[FMath::RandRange(min, max)];
+}
+
+FString ASGameMode_CoopFight::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal /*= TEXT("")*/)
+{
+	FString playerName = "";
+	playerName = UGameplayStatics::ParseOption(Options, TEXT("name"));
+	playerName = playerName == "" ? TEXT("NoName") : playerName;
+
+	APlayerState* PS = NewPlayerController->PlayerState;
+	auto GS = GetGameState<ASGameState>();
+
+	if (GS)
+	{
+		GS->OnNewPlayerLogin.Broadcast(FString::FromInt(PS->GetPlayerId()), playerName);
+	}
+
+	NewPlayerController->PlayerState->SetPlayerName(playerName == "" ? TEXT("NoName") : playerName);
+
+	return Super::InitNewPlayer(NewPlayerController, UniqueId, Options, Portal);
 }
 
 void ASGameMode_CoopFight::HandleActorKilled(AActor* VictimActor, AController* VictimController, AActor* KillerActor, AController* KillerController)

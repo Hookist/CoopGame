@@ -35,6 +35,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "GameMode")
 	float TimeBetweenWaves;
 
+	UPROPERTY()
+	uint8 NextPlayerId;
+
 public:
 
 	ASGameMode();
@@ -42,6 +45,8 @@ public:
 	virtual void StartPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 protected:
 
@@ -69,4 +74,6 @@ protected:
 	void SetWaveState(EWaveState NewState);
 
 	void RestartDeadPlayers();
+
+	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal = TEXT("")) override;
 };

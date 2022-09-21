@@ -95,4 +95,6 @@ public:
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Server_SpawnAndSetWeapon(TSubclassOf<ASWeapon> WeaponClass);
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 };

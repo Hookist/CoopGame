@@ -28,15 +28,26 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GameMode")
 	FOnActorKilled OnActorKilled;
 
+protected:
+
+	UPROPERTY()
+	uint8 NextPlayerId;
+
 private:
 
 	TArray<APlayerStart*> PlayerStarts;
 
 public:
 
+	ASGameMode_CoopFight();
+
 	virtual void StartPlay() override;
 
 	virtual AActor* FindPlayerStart_Implementation(AController* Player, const FString& IncomingName) override;
+
+protected:
+
+	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal = TEXT("")) override;
 
 private:
 	

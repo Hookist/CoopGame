@@ -14,6 +14,13 @@ class COOPGAME_API ASPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNameChanged, FString, NewName);
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNameChanged OnNameChanged;
+
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -25,6 +32,11 @@ public:
 	void AddScore(float ScoreDelta);
 
 	virtual void OnRep_Score() override;
+
+	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "PlayerState")
+	void BP_SetPlayerName(const FString& S);
+
+	virtual void OnRep_PlayerName() override;
 
 private:
 

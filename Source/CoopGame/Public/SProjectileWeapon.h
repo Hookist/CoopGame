@@ -26,4 +26,13 @@ public:
 	virtual void Fire_Implementation() override;
 
 	virtual void ServerFire_Implementation() override;
+
+protected:
+
+	virtual void FireInitiated();
+
+private:
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_PlaySound();
 };

@@ -129,6 +129,15 @@ void ASCharacter::Server_SpawnAndSetWeapon_Implementation(TSubclassOf<ASWeapon> 
 	}
 }
 
+void ASCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->Destroy(true);
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 void ASCharacter::HandleOnHealthChanged(USHealthComponent* HealtComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	if (Health <= 0.f && !bDied)
@@ -145,7 +154,8 @@ void ASCharacter::HandleOnHealthChanged(USHealthComponent* HealtComp, float Heal
 
 		if (GetLocalRole() == ROLE_Authority)
 		{ 
-			CurrentWeapon->Destroy(true);
+			if (CurrentWeapon)
+				CurrentWeapon->Destroy(true);
 		}
 		SetLifeSpan(5.f);
 	}

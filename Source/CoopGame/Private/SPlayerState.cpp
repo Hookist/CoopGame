@@ -22,6 +22,23 @@ void ASPlayerState::OnRep_Score()
 	}
 }
 
+void ASPlayerState::BP_SetPlayerName_Implementation(const FString& S)
+{
+	SetPlayerName(S);
+}
+
+//void ASPlayerState::BP_SetPlayerName(const FString& S)
+//{
+//	SetPlayerName(S);
+//}
+
+void ASPlayerState::OnRep_PlayerName()
+{
+	Super::OnRep_PlayerName();
+
+	OnNameChanged.Broadcast(GetPlayerName());
+}
+
 void ASPlayerState::PlayRandomSound(TArray<USoundBase*> Sounds)
 {
 	if (Sounds.Num() > 0)

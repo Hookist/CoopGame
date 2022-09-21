@@ -26,6 +26,7 @@ void ARocket::BeginPlay()
 
 void ARocket::HandleOnCollisonCompHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	//UKismetSystemLibrary::PlatSo
 	//AddRadialImpulseToPhysicBodyComponents();
 	//LaunchCharactersInRadius(Hit);
 	Server_AddRadialImpulseToPhysicBodyComponents();
@@ -33,7 +34,8 @@ void ARocket::HandleOnCollisonCompHit(UPrimitiveComponent* HitComponent, AActor*
 	
 	if (GetLocalRole() == ROLE_Authority)
 	{ 
-		UGameplayStatics::ApplyRadialDamage(GetWorld(), Damage, Hit.Location, ExplosionRadius, UDamageType::StaticClass(), {}, this, GetInstigatorController(), true);\
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), Damage, Hit.Location, ExplosionRadius, UDamageType::StaticClass(), {}, this, GetInstigatorController(), true);
+		NetMulticast_SpawnSoundAttached(ExplosionSound, GetRootComponent(), TEXT("MuzzleSocket"));
 	}
 	Super::HandleOnCollisonCompHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	Destroy();

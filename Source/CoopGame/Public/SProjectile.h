@@ -54,4 +54,7 @@ protected:
 	void PreEndPlay();
 
 	virtual void PreEndPlay_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_SpawnSoundAttached(USoundBase* Sound, USceneComponent* SceneComp, FName BoneName = NAME_None);
 };

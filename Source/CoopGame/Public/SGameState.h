@@ -26,11 +26,15 @@ class COOPGAME_API ASGameState : public AGameStateBase
 	GENERATED_BODY()
 	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPawnRespawned, APlayerController*, ControllerOfSpawnedPawn);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNewPlayerLogin, FString, UniqueId, FString, PlayerName);
 
 public:
 
 	UPROPERTY(BlueprintAssignable, Category = "GameState")
 	FOnPawnRespawned OnPawnRespawned;
+
+	UPROPERTY(BlueprintAssignable, Category = "GameState")
+	FOnNewPlayerLogin OnNewPlayerLogin;
 
 protected:
 

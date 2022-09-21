@@ -11,7 +11,7 @@ void ASKillZVolume::ActorEnteredVolume(class AActor* Other)
 	{
 		ASGameMode_CoopFight* GM = Cast<ASGameMode_CoopFight>(UGameplayStatics::GetGameMode(GetWorld()));
 		if (GM)
-		{ 
+		{
 			auto ctrl = Other->GetInstigatorController();
 			GM->OnActorKilled.Broadcast(Other, ctrl, this, nullptr);
 		}

@@ -3,6 +3,7 @@
 
 #include "SProjectileWeapon.h"
 #include "SProjectile.h"
+#include "Kismet/GameplayStatics.h"
 
 void ASProjectileWeapon::Fire_Implementation()
 {
@@ -11,22 +12,7 @@ void ASProjectileWeapon::Fire_Implementation()
 		ServerFire();
 		return;
 	}
-
-	LastFiredTime = GetWorld()->TimeSeconds;
-	if (!ProjectileClass)
-		return;
-
-	if (APawn* instigator = GetInstigator())
-	{
-		FVector outEyeViewLocation;
-		FRotator outEyeViewRotation;
-		instigator->GetActorEyesViewPoint(outEyeViewLocation, outEyeViewRotation);
-		FActorSpawnParameters actorSpawnParameters = FActorSpawnParameters();
-		actorSpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		actorSpawnParameters.Owner = this;
-		actorSpawnParameters.Instigator = GetInstigator();
-		GetWorld()->SpawnActor<ASProjectile>(ProjectileClass, MeshComp->GetSocketLocation("MuzzleSocket"), outEyeViewRotation, actorSpawnParameters);
-	}
+	FireInitiated();
 }
 
 ASProjectileWeapon::ASProjectileWeapon()
@@ -34,7 +20,7 @@ ASProjectileWeapon::ASProjectileWeapon()
 	bReplicates = true;
 }
 
-void ASProjectileWeapon::ServerFire_Implementation()
+void ASProjectileWeapon::FireInitiated()
 {
 	LastFiredTime = GetWorld()->TimeSeconds;
 	if (!ProjectileClass)
@@ -51,4 +37,16 @@ void ASProjectileWeapon::ServerFire_Implementation()
 		actorSpawnParameters.Instigator = GetInstigator();
 		GetWorld()->SpawnActor<ASProjectile>(ProjectileClass, MeshComp->GetSocketLocation("MuzzleSocket"), outEyeViewRotation, actorSpawnParameters);
 	}
+
+	Multicast_PlaySound();
+}
+
+void ASProjectileWeapon::Multicast_PlaySound_Implementation()
+{
+	UGameplayStatics::SpawnSoundAttached(ShootSound, GetRootComponent(), TEXT("MuzzleSocket"));
+}
+
+void ASProjectileWeapon::ServerFire_Implementation()
+{
+	FireInitiated();
 }

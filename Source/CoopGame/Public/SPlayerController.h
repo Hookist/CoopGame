@@ -22,6 +22,14 @@ protected:
 	UPROPERTY()
 	class UAudioComponent* AudioComponent;
 
+	UPROPERTY()
+	uint8 PlayerId;
+
+public:
+
+	UFUNCTION()
+	void SetPlayerId(uint8 NewPlayerId);
+
 protected:
 
 	virtual void BeginPlayingState() override;

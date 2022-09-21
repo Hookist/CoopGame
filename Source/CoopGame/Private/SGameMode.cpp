@@ -16,6 +16,8 @@ ASGameMode::ASGameMode()
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickInterval = 1.f;
+
+	NextPlayerId = 1;
 }
 
 void ASGameMode::StartPlay()
@@ -31,6 +33,11 @@ void ASGameMode::Tick(float DeltaSeconds)
 
 	CheckWaveState();
 	CheckAnyPlayerAlive();
+}
+
+void ASGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
 }
 
 void ASGameMode::SpawnBotTimerElapsed()
@@ -158,4 +165,9 @@ void ASGameMode::RestartDeadPlayers()
 			RestartPlayer(PC);
 		}
 	}
+}
+
+FString ASGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal /*= TEXT("")*/)
+{
+	return Super::InitNewPlayer(NewPlayerController, UniqueId, Options, Portal);
 }

@@ -41,8 +41,8 @@ void ASProjectile::HandleOnCollisonCompHit(UPrimitiveComponent* HitComp, AActor*
 	{
 		if (GetLocalRole() == ROLE_Authority)
 		{
+			// This is for AI purposes
 			MakeNoise(1.f, GetInstigator());
-
 			Destroy();
 		}
 	}
@@ -70,4 +70,9 @@ void ASProjectile::PreEndPlay_Implementation()
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, GetActorTransform());
 
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), 20.f, GetActorLocation(), DamageRadius, UDamageType::StaticClass(), actorsToIgnore);
+}
+
+void ASProjectile::NetMulticast_SpawnSoundAttached_Implementation(USoundBase* Sound, USceneComponent* SceneComp, FName BoneName /*= NAME_None*/)
+{
+	UGameplayStatics::SpawnSoundAttached(Sound, SceneComp, BoneName);
 }

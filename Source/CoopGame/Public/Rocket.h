@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Rocket")
 	float Damage;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Rocket")
+	USoundBase* ExplosionSound;
+
 public:
 
 	ARocket();
